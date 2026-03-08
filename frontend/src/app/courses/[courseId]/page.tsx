@@ -28,7 +28,7 @@ export default async function CourseDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
-      <div className="mb-4 text-sm text-gray-500">
+      <div className="mb-4 text-sm text-gray-600">
         <Link href="/courses" className="hover:underline">
           コース一覧
         </Link>
@@ -37,7 +37,7 @@ export default async function CourseDetailPage({
       </div>
 
       <h1 className="mb-3 text-3xl font-bold text-gray-900">{course.title}</h1>
-      <p className="mb-8 text-gray-600">{course.description}</p>
+      <p className="mb-8 text-gray-700">{course.description}</p>
 
       <h2 className="mb-4 text-xl font-semibold text-gray-800">レッスン一覧</h2>
       {/* initialLessons: SSR 時は未認証なので 1 つ目以外はロック済み */}

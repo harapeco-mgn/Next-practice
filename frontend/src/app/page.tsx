@@ -8,7 +8,7 @@ export default function Home() {
         <br />
         <span className="text-indigo-600">実践学習プラットフォーム</span>
       </h1>
-      <p className="mb-10 text-lg text-gray-600">
+      <p className="mb-10 text-lg text-gray-700">
         クイズ・チュートリアル・コード練習で、
         <br />
         モダン Web 開発スタックを体系的に習得しよう。

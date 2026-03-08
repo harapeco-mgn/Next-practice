@@ -53,7 +53,7 @@ export default async function CoursesPage() {
             <h2 className="mb-2 text-lg font-semibold text-gray-900">
               {course.title}
             </h2>
-            <p className="text-sm text-gray-600">{course.description}</p>
+            <p className="text-sm text-gray-700">{course.description}</p>
           </Link>
         ))}
       </div>
