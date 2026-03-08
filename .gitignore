@@ -1,0 +1,35 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Rails
+backend/log/
+backend/tmp/
+backend/storage/
+backend/.bundle/
+backend/vendor/bundle/
+
+# Database
+*.sqlite3
+*.sqlite3-journal
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+docker-compose.override.yml
