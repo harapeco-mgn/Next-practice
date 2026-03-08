@@ -223,7 +223,6 @@ erDiagram
 | 環境 | DB | Backend | Frontend |
 |------|-----|---------|---------|
 | ローカル開発 | Docker (PostgreSQL 16) | Docker (Rails) | Docker (Next.js) |
-| 本番 | [Neon](https://neon.tech) (Serverless PostgreSQL) | [Render](https://render.com) (Web Service) | [Render](https://render.com) (Web Service) |
 
 ---
 
@@ -300,122 +299,6 @@ docker compose up -d --force-recreate
 
 ---
 
-## 本番デプロイ（Render + Neon）
-
-### 構成図
-
-```
-GitHub
-  ├─ push → Render (backend: Rails API)  ← DATABASE_URL → Neon (PostgreSQL)
-  └─ push → Render (frontend: Next.js)   ← NEXT_PUBLIC_API_URL → Render backend
-```
-
-### 1. Neon（DB）セットアップ
-
-1. [neon.tech](https://neon.tech) でプロジェクト作成
-2. 接続文字列をコピー（形式: `postgresql://user:pass@host/db?sslmode=require`）
-3. Render の backend サービスの環境変数 `DATABASE_URL` に設定
-
-> **注意:** Neon は SSL 必須。接続文字列に `?sslmode=require` が含まれていることを確認する。
-
-### 2. Render（Backend: Rails）セットアップ
-
-**New Web Service** で以下を設定：
-
-| 項目 | 値 |
-|------|-----|
-| Repository | `harapeco-mgn/Next-practice` |
-| Root Directory | `backend` |
-| Environment | `Ruby` |
-| Build Command | `bundle install && bundle exec rails db:migrate` |
-| Start Command | `bundle exec rails server -p $PORT -e production` |
-
-**環境変数:**
-
-```
-DATABASE_URL        = <Neon接続文字列>
-SECRET_KEY_BASE     = <rails secret で生成>
-JWT_SECRET          = <任意の安全な文字列>
-FRONTEND_ORIGIN     = https://<your-frontend>.onrender.com
-RAILS_ENV           = production
-RAILS_LOG_TO_STDOUT = true
-```
-
-### 3. Render（Frontend: Next.js）セットアップ
-
-**New Web Service** で以下を設定：
-
-| 項目 | 値 |
-|------|-----|
-| Repository | `harapeco-mgn/Next-practice` |
-| Root Directory | `frontend` |
-| Environment | `Node` |
-| Build Command | `npm ci && npm run build` |
-| Start Command | `npm start` |
-
-**環境変数:**
-
-```
-NEXT_PUBLIC_API_URL = https://<your-backend>.onrender.com/api/v1
-INTERNAL_API_URL    = https://<your-backend>.onrender.com/api/v1
-```
-
-> **注意:** 本番環境では SSR もインターネット経由でバックエンドに接続するため、`INTERNAL_API_URL` と `NEXT_PUBLIC_API_URL` は同じURLになる。
-
-### render.yaml（Render Blueprint）
-
-```yaml
-services:
-  - type: web
-    name: next-practice-backend
-    env: ruby
-    rootDir: backend
-    buildCommand: bundle install && bundle exec rails db:migrate
-    startCommand: bundle exec rails server -p $PORT -e production
-    envVars:
-      - key: DATABASE_URL
-        sync: false
-      - key: SECRET_KEY_BASE
-        generateValue: true
-      - key: JWT_SECRET
-        sync: false
-      - key: RAILS_ENV
-        value: production
-      - key: RAILS_LOG_TO_STDOUT
-        value: true
-
-  - type: web
-    name: next-practice-frontend
-    env: node
-    rootDir: frontend
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
-    envVars:
-      - key: NEXT_PUBLIC_API_URL
-        sync: false
-      - key: INTERNAL_API_URL
-        sync: false
-```
-
-### Neon × Rails の注意点
-
-Neon はサーバーレスのため、接続が切れることがある。`config/database.yml` に接続プールの設定を追加する：
-
-```yaml
-production:
-  url: <%= ENV['DATABASE_URL'] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
-  connect_timeout: 10
-```
-
-### Render 無料プランの制約
-
-- **Cold Start:** 15分アクセスがないとスリープ → 初回リクエストが遅い（~30秒）
-- **対策:** `/up` エンドポイントに定期リクエストを送るか、有料プランにアップグレード
-
----
-
 ## ディレクトリ構成
 
 ```
@@ -428,7 +311,7 @@ Next-practice/
 │   ├── curriculum.md             # コース・レッスン設計書
 │   └── plan.md                   # 技術実装計画・DBスキーマ詳細
 ├── backend/                      # Rails API
-│   ├── Dockerfile
+│   ├── Dockerfile.dev
 │   ├── Gemfile
 │   ├── app/
 │   │   ├── controllers/api/v1/
