@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Render デプロイ用: standalone モードで依存ファイルを最小化
+  output: "standalone",
 };
 
 export default nextConfig;

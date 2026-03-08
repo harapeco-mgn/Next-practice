@@ -1,0 +1,38 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# デプロイ前に以下の環境変数をダッシュボードで手動設定:
+#   backend: DATABASE_URL, FRONTEND_ORIGIN
+#   frontend: NEXT_PUBLIC_API_URL, INTERNAL_API_URL
+
+services:
+  # ── Backend (Rails API) ─────────────────────────────────
+  - type: web
+    name: next-practice-backend
+    runtime: ruby
+    rootDir: backend
+    buildCommand: bundle install
+    startCommand: bundle exec rails db:migrate && bundle exec rails s -p $PORT -b 0.0.0.0
+    healthCheckPath: /up
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_LEVEL
+        value: info
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      # 手動設定が必要な変数（Render ダッシュボードで設定）
+      # DATABASE_URL: postgresql://user:pass@host.neon.tech/dbname?sslmode=require
+      # FRONTEND_ORIGIN: https://next-practice-frontend.onrender.com
+
+  # ── Frontend (Next.js) ──────────────────────────────────
+  - type: web
+    name: next-practice-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: node .next/standalone/server.js
+    envVars:
+      # 手動設定が必要な変数（Render ダッシュボードで設定）
+      # NEXT_PUBLIC_API_URL: https://next-practice-backend.onrender.com/api/v1
+      # INTERNAL_API_URL:    https://next-practice-backend.onrender.com/api/v1
