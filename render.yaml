@@ -21,9 +21,7 @@ services:
         generateValue: true
       - key: JWT_SECRET
         generateValue: true
-      # 手動設定が必要な変数（Render ダッシュボードで設定）
-      # DATABASE_URL: postgresql://user:pass@host.neon.tech/dbname?sslmode=require
-      # FRONTEND_ORIGIN: https://next-practice-frontend.onrender.com
+      # 手動設定: DATABASE_URL, FRONTEND_ORIGIN
 
   # ── Frontend (Next.js) ──────────────────────────────────
   - type: web
@@ -33,6 +31,6 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: node .next/standalone/server.js
     envVars:
-      # 手動設定が必要な変数（Render ダッシュボードで設定）
-      # NEXT_PUBLIC_API_URL: https://next-practice-backend.onrender.com/api/v1
-      # INTERNAL_API_URL:    https://next-practice-backend.onrender.com/api/v1
+      - key: PORT
+        value: "3000"
+      # 手動設定: NEXT_PUBLIC_API_URL, INTERNAL_API_URL
