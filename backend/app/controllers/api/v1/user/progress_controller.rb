@@ -27,6 +27,13 @@ module Api
             completed = completed_lessons + completed_quizzes
             progress_pct = total > 0 ? (completed * 100 / total) : 0
 
+            # 次に学習するレッスン（最初の未完了レッスン）
+            next_lesson = lessons.find do |l|
+              !current_user.user_progresses
+                .exists?(lesson: l, quiz_id: nil, status: "completed")
+            end
+            next_lesson_info = next_lesson ? { id: next_lesson.id, title: next_lesson.title } : nil
+
             {
               course_id: course.id,
               title: course.title,
@@ -36,7 +43,8 @@ module Api
               total_quizzes:,
               completed_lessons:,
               completed_quizzes:,
-              progress_pct:
+              progress_pct:,
+              next_lesson: next_lesson_info
             }
           end
 

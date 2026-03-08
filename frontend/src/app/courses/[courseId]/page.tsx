@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Course, Lesson } from "@/lib/types";
+import LessonList from "./LessonList";
 
-type CourseDetail = Course & {
-  lessons: Pick<Lesson, "id" | "title" | "position">[];
+type LessonSummary = Pick<Lesson, "id" | "title" | "position"> & {
+  locked: boolean;
 };
+type CourseDetail = Course & { lessons: LessonSummary[] };
 
 async function getCourse(id: string): Promise<CourseDetail> {
   const baseURL =
@@ -38,21 +40,9 @@ export default async function CourseDetailPage({
       <p className="mb-8 text-gray-600">{course.description}</p>
 
       <h2 className="mb-4 text-xl font-semibold text-gray-800">レッスン一覧</h2>
-      <ol className="space-y-3">
-        {course.lessons.map((lesson, index) => (
-          <li key={lesson.id}>
-            <Link
-              href={`/courses/${courseId}/lessons/${lesson.id}`}
-              className="flex items-center gap-4 rounded-lg border bg-white px-5 py-4 shadow-sm transition hover:border-indigo-400 hover:shadow-md"
-            >
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
-                {index + 1}
-              </span>
-              <span className="font-medium text-gray-800">{lesson.title}</span>
-            </Link>
-          </li>
-        ))}
-      </ol>
+      {/* initialLessons: SSR 時は未認証なので 1 つ目以外はロック済み */}
+      {/* クライアントで再フェッチしてログイン済みユーザーのロック状態を反映 */}
+      <LessonList courseId={courseId} initialLessons={course.lessons} />
     </div>
   );
 }
