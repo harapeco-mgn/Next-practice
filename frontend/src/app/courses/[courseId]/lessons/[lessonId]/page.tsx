@@ -6,6 +6,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import type { Components } from "react-markdown";
 import type { Lesson, Quiz } from "@/lib/types";
 import QuizCard from "@/components/quiz/QuizCard";
+import CodeChallengeCard from "@/components/quiz/CodeChallengeCard";
 import LessonCompleteButton from "./LessonCompleteButton";
 
 type LessonDetail = Lesson & {
@@ -83,9 +84,13 @@ export default async function LessonPage({
             確認クイズ
           </h2>
           <div className="space-y-6">
-            {lesson.quizzes.map((quiz) => (
-              <QuizCard key={quiz.id} quiz={quiz} />
-            ))}
+            {lesson.quizzes.map((quiz) =>
+              quiz.quiz_type === "code_challenge" ? (
+                <CodeChallengeCard key={quiz.id} quiz={quiz} />
+              ) : (
+                <QuizCard key={quiz.id} quiz={quiz} />
+              )
+            )}
           </div>
         </section>
       )}
