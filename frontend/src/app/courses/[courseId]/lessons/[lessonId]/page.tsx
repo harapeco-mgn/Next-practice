@@ -72,7 +72,7 @@ export default async function LessonPage({
 
       <h1 className="mb-8 text-3xl font-bold text-gray-900">{lesson.title}</h1>
 
-      <article className="prose prose-indigo max-w-none">
+      <article className="prose prose-gray max-w-none">
         <ReactMarkdown components={markdownComponents}>
           {lesson.content}
         </ReactMarkdown>
